@@ -51,10 +51,16 @@ export const getGigs = async (req, res, next) => {
     }),
     ...(q.search && { title: { $regex: q.search, $options: "i" } }),
   };
+
   try {
-    const gigs = await Gig.find(filters).sort({ [q.sort]: -1 });
+    const gigs = await (Object.keys(filters).length
+      ? Gig.find(filters)
+      : Gig.find()
+    ).sort({ [q.sort]: -1 });
+
     res.status(200).send(gigs);
   } catch (err) {
     next(err);
   }
 };
+
